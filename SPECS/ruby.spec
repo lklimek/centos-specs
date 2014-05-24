@@ -1,7 +1,7 @@
 %global major_version 2
 %global minor_version 1
 %global teeny_version 1
-%global patch_level 76
+%global patch_level 77
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -153,6 +153,7 @@ Requires: rubygem(bigdecimal) >= %{bigdecimal_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
+BuildRequires: chrpath
 # BuildRequires: libdb-devel
 BuildRequires: libffi-devel
 BuildRequires: openssl-devel
@@ -435,6 +436,7 @@ autoconf
         --with-ruby-version='' \
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
+        --disable-rpath \
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -561,12 +563,14 @@ sed -e "s|@LIBRARY_PATH@|%{tapset_libdir}/libruby.so.%{ruby_version}|" \
 # Escape '*/' in comment.
 sed -i -r "s|( \*.*\*)\/(.*)|\1\\\/\2|" %{buildroot}%{tapset_dir}/libruby.so.%{ruby_version}.stp
 
+chrpath --delete %{buildroot}/usr/lib64/ruby/tcltklib.so
+
 %check
 DISABLE_TESTS=""
 
 %ifarch armv7l armv7hl armv7hnl
 # test_call_double(DL::TestDL) fails on ARM HardFP
-# http://bugs.ruby-lang.org/issues/6592
+# http://bugs.ruby-lang.org/issues/16592
 DISABLE_TESTS="-x test_dl2.rb $DISABLE_TESTS"
 %endif
 
@@ -589,7 +593,7 @@ sed -i '/^  def test_machine_stackoverflow/,/^  end/ s/^/#/' test/ruby/test_exce
 
 # Allow MD5 in OpenSSL.
 # https://bugs.ruby-lang.org/issues/9154
-OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
+#OPENSSL_ENABLE_MD5_VERIFY=1 make check TESTS="-v $DISABLE_TESTS"
 
 %post libs -p /sbin/ldconfig
 
