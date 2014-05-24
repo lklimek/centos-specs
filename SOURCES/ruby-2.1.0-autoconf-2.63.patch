@@ -1,0 +1,12 @@
+diff -ru ruby-2.1.1.old/configure.in ruby-2.1.1/configure.in
+--- ruby-2.1.1.old/configure.in	2014-02-22 00:32:34.000000000 +0100
++++ ruby-2.1.1/configure.in	2014-05-24 21:59:54.055461398 +0200
+@@ -3,7 +3,7 @@
+ {
+ AC_CONFIG_AUX_DIR(tool)
+ 
+-AC_PREREQ(2.67)
++AC_PREREQ(2.63)
+ 
+ AC_DEFUN([RUBY_PREREQ_AC],
+ 	[m4_if(m4_version_compare(m4_defn([m4_PACKAGE_VERSION]), [$1]), [-1],
